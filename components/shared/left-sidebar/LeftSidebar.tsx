@@ -10,8 +10,8 @@ import React from "react";
 const LeftSidebar = () => {
   const pathname = usePathname();
   return (
-    <section className="absolute inset-y-0 left-0 hidden h-full flex-col items-start justify-between px-6 pb-8 pt-10 sm:flex">
-      <div className="mt-20">
+    <section className="background-light900_dark200 light-border custom-scrollbar sticky left-0 top-0 flex h-screen flex-col items-start justify-between overflow-y-auto border-r px-6 pb-8 pt-36 shadow-light-300 dark:shadow-none max-sm:hidden lg:w-[266px]">
+      <div className="flex flex-1 flex-col gap-6">
         {sidebarLinks.map((item) => {
           const isActive =
             (pathname.includes(item.route) && item.route.length > 1) ||
@@ -37,7 +37,7 @@ const LeftSidebar = () => {
               <p
                 className={`${
                   isActive ? "base-bold" : "base-medium"
-                } hidden lg:block`}
+                } max-lg:hidden`}
               >
                 {item.label}
               </p>
@@ -49,14 +49,31 @@ const LeftSidebar = () => {
         <div className="flex w-full flex-col gap-3">
           <Link href="/sign-in">
             <Button className="small-medium btn-secondary min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none">
-              
-              <span className="primary-text-gradient">Log In</span>
+              <Image
+                src="/assets/icons/account.svg"
+                alt="Log In"
+                width={20}
+                height={20}
+                className="invert-colors lg:hidden"
+              />
+              <span className="primary-text-gradient max-lg:hidden">
+                Log In
+              </span>
             </Button>
           </Link>
 
           <Link href="/sign-up">
             <Button className="small-medium light-border-2 btn-tertiary text-dark400_light900 min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none">
-              Sign Up
+              <Image
+                src="/assets/icons/sign-up.svg"
+                alt="Sign Up"
+                width={20}
+                height={20}
+                className="invert-colors lg:hidden"
+              />
+              <span className="max-lg:hidden">
+                Sign Up
+              </span>
             </Button>
           </Link>
         </div>
