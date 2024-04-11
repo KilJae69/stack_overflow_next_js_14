@@ -23,7 +23,7 @@ const questions = [
       picture: "path/to/picture.jpg",
     },
     upvotes: 10,
-    views: 100,
+    views: 121221100,
     answers: [],
     createdAt: new Date("2024-04-05T12:00:00.000Z"),
   },

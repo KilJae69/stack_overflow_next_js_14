@@ -1,10 +1,10 @@
-"use client"
 
 import Link from "next/link";
 import React from "react";
 import RenderTag from "../ui/RenderTag";
 import Metric from "../shared/Metric";
-import { getTimestamp } from "@/lib/utils";
+import { formatAndDivideNumber, getTimestamp } from "@/lib/utils";
+
 
 interface Props {
   _id: string;
@@ -31,7 +31,7 @@ const QuestionCard = ({
   answers,
   createdAt,
 }: Props) => {
-    console.log(createdAt)
+    
   return (
     <div className="card-wrapper rounded-[10px] p-9 sm:px-11">
       <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
@@ -66,21 +66,21 @@ const QuestionCard = ({
         <Metric 
         imgUrl = "/assets/icons/like.svg"
         alt = "Upvotes"
-        value = {upvotes}
+        value = {formatAndDivideNumber(upvotes)}
         title = " Votes"
         textStyles = "small-medium text-dark400_light800"
         />
         <Metric 
         imgUrl = "/assets/icons/message.svg"
         alt = "Message"
-        value = {answers.length}
+        value = {formatAndDivideNumber(answers.length)}
         title = " Answers"
         textStyles = "small-medium text-dark400_light800"
         />
         <Metric 
         imgUrl = "/assets/icons/eye.svg"
         alt = "views"
-        value = {views}
+        value = {formatAndDivideNumber(views)}
         title = " Views"
         textStyles = "small-medium text-dark400_light800"
         />
