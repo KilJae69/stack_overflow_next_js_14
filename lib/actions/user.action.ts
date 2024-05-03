@@ -46,6 +46,7 @@ export async function updateUser(params: UpdateUserParams) {
     throw new Error("Error updating user");
   }
 }
+
 export async function deleteUser(params: DeleteUserParams) {
   try {
     connectToDatabase();
