@@ -87,7 +87,7 @@ export default async function QuestionDetailsPage({ params }: any) {
         />
       </div>
 
-      <ParseHTML data={result.content} />
+      <ParseHTML data={result.content} /> 
 
       <div className="mt-8 flex flex-wrap gap-2">
         {result.tags.map((tag: any) => (
