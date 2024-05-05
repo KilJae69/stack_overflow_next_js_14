@@ -1,17 +1,20 @@
 "use client"
 
 
+import { downvoteAnswer, upvoteAnswer } from "@/lib/actions/answer.action";
+import { downvoteQuestion, upvoteQuestion } from "@/lib/actions/question.action";
 import { formatAndDivideNumber } from "@/lib/utils";
 import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 
 interface Props {
     type: string;
     itemId: string;
     userId: string;
     upvotes: number;
-    hasUpvoted: boolean;
+    hasupVoted: boolean;
     downvotes: number;
-    hasDownvoted: boolean;
+    hasdownVoted: boolean;
     hasSaved?: boolean;
   
 }
@@ -21,16 +24,31 @@ export default function Votes({
     itemId,
     userId,
     upvotes,
-    hasUpvoted,
+    hasupVoted,
     downvotes,
-    hasDownvoted,
+    hasdownVoted,
     hasSaved,
 }:Props) {
+    const pathname = usePathname(); 
+    const router = useRouter()
 
     const handleSave = async () => {}
 
+   
+    const handleVote = async (action: string) => {
+        if(!userId) return 
 
-    const handleVote = async (action: string) => {}
+
+        if(action ==="upvote" && type==="question"){ await upvoteQuestion({questionId:JSON.parse(itemId), userId:JSON.parse(userId), hasupVoted, hasdownVoted, path:pathname})}
+
+         if(action ==="upvote" && type==="answer"){ await upvoteAnswer({answerId:JSON.parse(itemId), userId:JSON.parse(userId), hasupVoted, hasdownVoted, path:pathname})}
+
+        
+        if(action ==="downvote" && type ==="question") await downvoteQuestion({questionId:JSON.parse(itemId), userId:JSON.parse(userId), hasupVoted, hasdownVoted, path:pathname})
+         if(action ==="downvote" && type ==="answer") await downvoteAnswer({answerId:JSON.parse(itemId), userId:JSON.parse(userId), hasupVoted, hasdownVoted, path:pathname})
+
+       // TODO: Show a toast message 
+    }
 
 
   return (
@@ -38,7 +56,7 @@ export default function Votes({
         <div className="flex-center gap-2.5">
             <div className="flex-center gap-1.5">
                 <Image
-                src={hasUpvoted ? "/assets/icons/upvoted.svg":"/assets/icons/upvote.svg"}
+                src={hasupVoted ? "/assets/icons/upvoted.svg":"/assets/icons/upvote.svg"}
                 width={18}
                 height={18}
                 alt="upvote"
@@ -53,7 +71,7 @@ export default function Votes({
 
             <div className="flex-center gap-1.5">
                 <Image
-                src={hasDownvoted ? "/assets/icons/downvoted.svg":"/assets/icons/downvote.svg"}
+                src={hasdownVoted ? "/assets/icons/downvoted.svg":"/assets/icons/downvote.svg"}
                 width={18}
                 height={18}
                 alt="downvote"
@@ -67,14 +85,14 @@ export default function Votes({
             </div>
         </div>
 
-        <Image
+      {type ==="question" &&  <Image
                 src={hasSaved ? "/assets/icons/star-filled.svg":"/assets/icons/star-red.svg"}
                 width={18}
                 height={18}
                 alt="star"
                 className="cursor-pointer"
                 onClick={handleSave}
-                />
+                />}
     </div>
   );
   

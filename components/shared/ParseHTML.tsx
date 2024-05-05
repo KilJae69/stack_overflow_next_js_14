@@ -36,7 +36,7 @@ export default function ParseHTML({data}:Props) {
 
 
   return (
-    <div>
+    <div className={'markdown w-full min-w-full'}>
         {parse(data)}
     </div>
   );

@@ -9,7 +9,7 @@ import Link from "next/link";
 export default async function CommunityPage() {
 
 const result = await getAllUsers({})
-console.log(result)
+
 
   return (
     <>

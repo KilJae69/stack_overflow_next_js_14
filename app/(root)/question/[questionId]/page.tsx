@@ -19,8 +19,7 @@ export default async function QuestionDetailsPage({ params }: any) {
   const result = await getQuestionById(questionId);
   const {userId:clerkId} = auth();
 
-    console.log("RESULT ID",result._id);
-    console.log("Question ID",questionId);
+
 
   let mongoUser;
 
@@ -52,9 +51,9 @@ export default async function QuestionDetailsPage({ params }: any) {
             itemId= {JSON.stringify(result._id)}
             userId={JSON.stringify(mongoUser._id)}
             upvotes={result.upvotes.length}
-            hasUpvoted = {result.upvotes.includes(mongoUser._id)}
+            hasupVoted = {result.upvotes.includes(mongoUser._id)}
             downvotes={result.downvotes.length}
-            hasDownvoted = {result.downvotes.includes(mongoUser._id)}
+            hasdownVoted = {result.downvotes.includes(mongoUser._id)}
             hasSaved = {mongoUser?.saved.includes(result._id)}
             />
           </div>
@@ -103,7 +102,7 @@ export default async function QuestionDetailsPage({ params }: any) {
         
       <AllAnswers
       questionId={result._id}
-      userId={JSON.stringify(mongoUser._id)}
+      userId={mongoUser._id}
       totalAnswers = {result.answers.length}
       />
 

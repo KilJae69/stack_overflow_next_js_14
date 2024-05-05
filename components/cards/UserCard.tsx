@@ -19,7 +19,7 @@ export default async function UserCard({ user }: Props) {
     userId: user._id,
     limit: 3,
   });
-  console.log(interactedTags);
+
 
   return (
     <Link
