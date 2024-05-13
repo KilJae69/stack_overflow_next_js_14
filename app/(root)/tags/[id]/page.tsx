@@ -8,10 +8,10 @@ import { getQuestionsByTagId } from "@/lib/actions/tag.action";
 import { URLProps } from "@/types";
 
 export default async function TagDetailPage({params,searchParams}:URLProps) {
-     console.log(searchParams.q);
+   
     const result = await getQuestionsByTagId({tagId:params.id,searchQuery:searchParams.q});
 
-    console.log(result);
+   
 
     return (
         <>

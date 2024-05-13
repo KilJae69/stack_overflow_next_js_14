@@ -19,7 +19,7 @@ const CollectionPage = async () => {
         if(!userId) return null
 
     const result = await getSavedQuestions({clerkId: userId});
-    console.log(result);
+    
  
   return (
     <>

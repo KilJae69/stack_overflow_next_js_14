@@ -8,6 +8,7 @@ import { formatAndDivideNumber, getTimestamp } from "@/lib/utils";
 
 interface Props {
   _id: string;
+  clerkId?: string;
   title: string;
   tags: { _id: string; name: string }[];
   author: {
@@ -23,6 +24,7 @@ interface Props {
 
 const QuestionCard = ({
   _id,
+  clerkId,
   title,
   tags,
   author,
@@ -32,7 +34,7 @@ const QuestionCard = ({
   createdAt,
 }: Props) => {
 
-  console.log(upvotes);
+  
     
   return (
     <div className="card-wrapper rounded-[10px] p-9 sm:px-11">

@@ -90,7 +90,7 @@ export default function Votes({
   useEffect(()=>{
     viewQuestion({questionId: JSON.parse(itemId), userId:userId ? JSON.parse(userId) : undefined})
 
-   console.log("effect run");
+   
   },[itemId,userId, pathname,router])
 
   return (
