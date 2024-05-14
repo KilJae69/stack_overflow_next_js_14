@@ -16,8 +16,6 @@ export default async function ProfilePage({ params, searchParams }: URLProps) {
   const { userId: clerkId } = auth();
   const userInfo = await getUserInfo({ userId: params.id });
 
-  
-
   return (
     <>
       <div className="flex flex-col-reverse items-start justify-between sm:flex-row">
@@ -101,11 +99,11 @@ export default async function ProfilePage({ params, searchParams }: URLProps) {
               clerkId={clerkId}
             />
           </TabsContent>
-          <TabsContent value="answers">
+          <TabsContent value="answers" className="flex w-full flex-col">
             <AnswersTab
-            searchParams={searchParams}
-            userId={userInfo.user._id}
-            clerkId={clerkId}
+              searchParams={searchParams}
+              userId={userInfo.user._id}
+              clerkId={clerkId}
             />
           </TabsContent>
         </Tabs>

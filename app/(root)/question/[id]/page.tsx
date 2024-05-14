@@ -15,15 +15,17 @@ import Link from "next/link";
 
 
 export default async function QuestionDetailsPage({ params }: any) {
-  const { questionId } = params;
-  const result = await getQuestionById(questionId);
-  const {userId:clerkId} = auth();
-
-
+  const { userId: clerkId } = auth();
 
   let mongoUser;
 
-  if( clerkId ) mongoUser = await getUserById({userId:clerkId});
+  if(clerkId) {
+    mongoUser = await getUserById({ userId: clerkId })
+  }
+
+  const result = await getQuestionById({ questionId: params.id });
+
+ 
 
   return (
     <>

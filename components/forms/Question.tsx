@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {  useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import React, { useRef, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
@@ -20,49 +20,69 @@ import { Input } from "@/components/ui/input";
 import { QuestionSchema } from "@/lib/validations";
 import { Badge } from "../ui/badge";
 import Image from "next/image";
-import { useRouter,usePathname } from "next/navigation";
-import { createQuestion } from "@/lib/actions/question.action";
+import { useRouter, usePathname } from "next/navigation";
+import { createQuestion, editQuestion } from "@/lib/actions/question.action";
 import { useTheme } from "@/context/ThemeProvider";
 
-const type:any = "create"
-
 interface Props {
+  type?: string;
   mongoUserId: string;
+  questionDetails?: string;
 }
 
-const Question = ({mongoUserId}:Props) => {
-  const {mode} = useTheme();
+const Question = ({ type, mongoUserId, questionDetails }: Props) => {
+  const { mode } = useTheme();
   const editorRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
+  let parsedQuestionDetails: any = {};
+  try {
+    parsedQuestionDetails = questionDetails ? JSON.parse(questionDetails) : {};
+  } catch (error) {
+    console.error("Failed to parse questionDetails:", error);
+  }
+
+  const groupedTags = parsedQuestionDetails.tags
+    ? parsedQuestionDetails.tags.map((tag: any) => tag.name)
+    : [];
+
   const form = useForm<z.infer<typeof QuestionSchema>>({
     resolver: zodResolver(QuestionSchema),
     defaultValues: {
-      title: "",
-      explanation: "",
-      tags: [],
+      title: parsedQuestionDetails.title || "",
+      explanation: parsedQuestionDetails.content || "",
+      tags: groupedTags || [],
     },
   });
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof QuestionSchema>) {
-   setIsSubmitting(true);
-    try{
-      await createQuestion({
+    setIsSubmitting(true);
+    try {
+      if (type === "edit") {
+        await editQuestion({
+          questionId: parsedQuestionDetails._id,
+          title: values.title,
+          content: values.explanation,
+          path: pathname,
+        });
+        router.push(`/question/${parsedQuestionDetails._id}`);
+      }
+
+    if(type === "create") { await createQuestion({
         title: values.title,
         content: values.explanation,
         tags: values.tags,
         author: JSON.parse(mongoUserId),
         path: pathname,
-      })
+      });
 
-      router.push("/")
-    }catch(error){
-
+      router.push("/");}
+    } catch (error) {
     } finally {
-        setIsSubmitting(false);
+      setIsSubmitting(false);
     }
   }
 
@@ -99,7 +119,7 @@ const Question = ({mongoUserId}:Props) => {
     const newTags = field.value.filter((t: string) => t !== tag);
 
     form.setValue("tags", newTags);
-  }
+  };
 
   return (
     <Form {...form}>
@@ -148,7 +168,7 @@ const Question = ({mongoUserId}:Props) => {
                   }}
                   onBlur={field.onBlur}
                   onEditorChange={(content) => field.onChange(content)}
-                  initialValue=""
+                  initialValue={parsedQuestionDetails.content || ""}
                   init={{
                     height: 350,
                     menubar: false,
@@ -174,7 +194,7 @@ const Question = ({mongoUserId}:Props) => {
                       "codesample | bold italic forecolor | alignleft aligncenter |" +
                       "alignright alignjustify | bullist numlist",
                     content_style: "body { font-family:Inter; font-size:16px }",
-                     skin: mode === "dark" ? "oxide-dark" : "oxide",
+                    skin: mode === "dark" ? "oxide-dark" : "oxide",
                     content_css: mode === "dark" ? "dark" : "light",
                   }}
                 />
@@ -199,6 +219,7 @@ const Question = ({mongoUserId}:Props) => {
               <FormControl className="mt-3.5">
                 <>
                   <Input
+                    disabled={type === "edit"}
                     className="no-focus paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] border"
                     placeholder="e.g. reactjs, javascript"
                     onKeyDown={(e) => handleInputKeyDown(e, field)}
@@ -207,18 +228,24 @@ const Question = ({mongoUserId}:Props) => {
                     <div className="flex-start mt-2.5 gap-2.5">
                       {field.value.map((tag: any) => (
                         <Badge
-                          onClick={() => handleTagRemove(tag, field)}
+                          onClick={() =>
+                            type === "create"
+                              ? handleTagRemove(tag, field)
+                              : () => {}
+                          }
                           className="subtle-medium background-light800_dark300 text-light400_light500 flex items-center justify-center gap-2 rounded-md border-none px-4 py-2 capitalize"
                           key={tag}
                         >
                           {tag}
-                          <Image
-                            src="/assets/icons/close.svg"
-                            alt="close"
-                            width={12}
-                            height={12}
-                            className="cursor-pointer object-contain invert-0 dark:invert"
-                          />
+                          {type === "create" && (
+                            <Image
+                              src="/assets/icons/close.svg"
+                              alt="close"
+                              width={12}
+                              height={12}
+                              className="cursor-pointer object-contain invert-0 dark:invert"
+                            />
+                          )}
                         </Badge>
                       ))}
                     </div>
@@ -233,16 +260,17 @@ const Question = ({mongoUserId}:Props) => {
             </FormItem>
           )}
         />
-        <Button className="primary-gradient w-fit !text-light-900" type="submit" disabled={isSubmitting}>{isSubmitting ? (
-            <>
-            {type === "edit" ? "Editing..." : "Posting..."}
-            </>
-        ):(
-            <>
-            {type === "edit" ? "Edit Question" : "Ask a Question"}
-            </>
-            
-        )}</Button>
+        <Button
+          className="primary-gradient w-fit !text-light-900"
+          type="submit"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>{type === "edit" ? "Editing..." : "Posting..."}</>
+          ) : (
+            <>{type === "edit" ? "Edit Question" : "Ask a Question"}</>
+          )}
+        </Button>
       </form>
     </Form>
   );
