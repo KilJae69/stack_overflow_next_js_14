@@ -58,6 +58,7 @@ export default function Votes({
     }
 
     if (action === "upvote" && type === "answer") {
+      console.log("helloooooo");
       await upvoteAnswer({
         answerId: JSON.parse(itemId),
         userId: JSON.parse(userId),

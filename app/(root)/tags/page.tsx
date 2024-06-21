@@ -7,9 +7,11 @@ import { getAllTags } from "@/lib/actions/tag.action";
 import { SearchParamsProps } from "@/types";
 import Link from "next/link";
 
-export default async function TagsPage({searchParams}:SearchParamsProps) {
-    const result = await getAllTags({searchQuery: searchParams.q,})
-    
+export default async function TagsPage({ searchParams }: SearchParamsProps) {
+  const result = await getAllTags({
+    searchQuery: searchParams.q,
+    filter: searchParams.filter,
+  });
 
   return (
     <>
@@ -26,26 +28,27 @@ export default async function TagsPage({searchParams}:SearchParamsProps) {
         <Filter
           filters={TagFilters}
           otherClasses="min-h-[56px] sm:min-w-[170px]"
-
         />
       </div>
       <section className="mt-12 flex flex-wrap gap-4">
         {result.length === 0 && (
-            <NoResult
+          <NoResult
             title="No Tags found"
             description="It looks like there are no tags found."
             link="/ask-question"
-            linkTitle="Ask a question"/>
+            linkTitle="Ask a question"
+          />
         )}
-        {result.map(tag => (
-            <Link href={`/tags/${tag._id}`} key={tag._id} className="shadow-light100_darknone">
-
-                <TagCard tag = {tag}/>
-            </Link>
-            
+        {result.map((tag) => (
+          <Link
+            href={`/tags/${tag._id}`}
+            key={tag._id}
+            className="shadow-light100_darknone"
+          >
+            <TagCard tag={tag} />
+          </Link>
         ))}
       </section>
     </>
   );
-  
 }

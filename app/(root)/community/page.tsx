@@ -9,12 +9,14 @@ import Link from "next/link";
 
 export default async function CommunityPage({searchParams}:SearchParamsProps) {
 
-const result = await getAllUsers({ searchQuery: searchParams.q,})
+const result = await getAllUsers({ searchQuery: searchParams.q, filter: searchParams.filter})
 
 
   return (
     <>
       <h1 className="h1-bold text-dark100_light900">All Questions</h1>
+
+      
 
       <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
         <LocalSearchbar

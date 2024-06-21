@@ -6,6 +6,7 @@ import { GetAllTagsParams, GetQuestionsByTagIdParams, GetTopInteractedTagsParams
 import Tag, { ITag } from "@/database/tag.model";
 import { FilterQuery } from "mongoose";
 import Question from "@/database/question.model";
+import { LocaleRouteNormalizer } from "next/dist/server/future/normalizers/locale-route-normalizer";
 
 export async function getTopInteractedTags(params: GetTopInteractedTagsParams) {
   try {
@@ -37,7 +38,7 @@ export async function getAllTags(params:GetAllTagsParams){
   try {
     connectToDatabase();
 
-     const {  searchQuery } = params;
+     const {  searchQuery,filter } = params;
 
      const query: FilterQuery<typeof Tag> = {};
 
@@ -48,7 +49,26 @@ export async function getAllTags(params:GetAllTagsParams){
       ]
     }
 
-    const tags = await Tag.find(query);
+  
+
+    let sortOptions = {};
+
+    switch (filter) {
+      case "popular":
+        sortOptions = { questions: -1 };
+        break;
+      case "recent":
+        sortOptions = { createdOn: -1 };
+        break;
+      case "name":
+        sortOptions = { name: 1 };
+        break;
+      case "old":
+        sortOptions = { createdOn: 1 };
+        break;
+    }
+
+    const tags = await Tag.find(query).sort(sortOptions);
 
     return tags;
 

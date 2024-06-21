@@ -14,7 +14,7 @@ import Link from "next/link";
 
 
 
-export default async function QuestionDetailsPage({ params }: any) {
+export default async function QuestionDetailsPage({ params,searchParams }: any) {
   const { userId: clerkId } = auth();
 
   let mongoUser;
@@ -106,6 +106,8 @@ export default async function QuestionDetailsPage({ params }: any) {
       questionId={result._id}
       userId={mongoUser._id}
       totalAnswers = {result.answers.length}
+      page = {searchParams?.page}
+      filter={searchParams?.filter}
       />
 
       <AnswerForm
