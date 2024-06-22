@@ -12,6 +12,7 @@ import Stats from "@/components/shared/Stats";
 import QuestionsTab from "@/components/shared/QuestionsTab";
 import AnswersTab from "@/components/shared/AnswersTab";
 
+
 export default async function ProfilePage({ params, searchParams }: URLProps) {
   const { userId: clerkId } = auth();
   const userInfo = await getUserInfo({ userId: params.id });
@@ -98,6 +99,7 @@ export default async function ProfilePage({ params, searchParams }: URLProps) {
               userId={userInfo.user._id}
               clerkId={clerkId}
             />
+            
           </TabsContent>
           <TabsContent value="answers" className="flex w-full flex-col">
             <AnswersTab
@@ -105,6 +107,7 @@ export default async function ProfilePage({ params, searchParams }: URLProps) {
               userId={userInfo.user._id}
               clerkId={clerkId}
             />
+             
           </TabsContent>
         </Tabs>
       </div>

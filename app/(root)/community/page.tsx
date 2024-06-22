@@ -1,22 +1,24 @@
 import UserCard from "@/components/cards/UserCard";
 import Filter from "@/components/shared/Filter";
+import Pagination from "@/components/shared/Pagination";
 import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
 import { UserFilters } from "@/constants/filters";
 import { getAllUsers } from "@/lib/actions/user.action";
 import { SearchParamsProps } from "@/types";
 import Link from "next/link";
 
-
-export default async function CommunityPage({searchParams}:SearchParamsProps) {
-
-const result = await getAllUsers({ searchQuery: searchParams.q, filter: searchParams.filter})
-
+export default async function CommunityPage({
+  searchParams,
+}: SearchParamsProps) {
+  const {users,isNext} = await getAllUsers({
+    searchQuery: searchParams.q,
+    filter: searchParams.filter,
+    page: searchParams.page ? +searchParams.page : 1,
+  });
 
   return (
     <>
       <h1 className="h1-bold text-dark100_light900">All Questions</h1>
-
-      
 
       <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
         <LocalSearchbar
@@ -29,20 +31,27 @@ const result = await getAllUsers({ searchQuery: searchParams.q, filter: searchPa
         <Filter
           filters={UserFilters}
           otherClasses="min-h-[56px] sm:min-w-[170px]"
-
         />
       </div>
       <section className="mt-12 flex flex-wrap gap-4">
-        {result.length === 0 && (
-            <div className="paragraph-regular text-dark200_light800 mx-auto max-w-4xl text-center">
-                <p>No users yet</p>
-                <Link href="/sign-up" className="mt-2 font-bold text-accent-blue">Join to be the first!</Link>
-            </div>
+        {users.length === 0 && (
+          <div className="paragraph-regular text-dark200_light800 mx-auto max-w-4xl text-center">
+            <p>No users yet</p>
+            <Link href="/sign-up" className="mt-2 font-bold text-accent-blue">
+              Join to be the first!
+            </Link>
+          </div>
         )}
-         {result.map(user => (
-            <UserCard key={user._id} user = {user}/>
+        {users.map((user) => (
+          <UserCard key={user._id} user={user} />
         ))}
       </section>
+      <div className="mt-10">
+        <Pagination
+          pageNumber={searchParams?.page ? +searchParams.page : 1}
+          isNext={isNext}
+        />
+      </div>
     </>
   );
 }

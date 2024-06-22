@@ -1,6 +1,7 @@
 import TagCard from "@/components/cards/TagCard";
 import Filter from "@/components/shared/Filter";
 import NoResult from "@/components/shared/NoResult";
+import Pagination from "@/components/shared/Pagination";
 import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
 import { TagFilters } from "@/constants/filters";
 import { getAllTags } from "@/lib/actions/tag.action";
@@ -11,6 +12,7 @@ export default async function TagsPage({ searchParams }: SearchParamsProps) {
   const result = await getAllTags({
     searchQuery: searchParams.q,
     filter: searchParams.filter,
+    page: searchParams.page ? +searchParams.page : 1,
   });
 
   return (
@@ -31,7 +33,7 @@ export default async function TagsPage({ searchParams }: SearchParamsProps) {
         />
       </div>
       <section className="mt-12 flex flex-wrap gap-4">
-        {result.length === 0 && (
+        {result.tags.length === 0 && (
           <NoResult
             title="No Tags found"
             description="It looks like there are no tags found."
@@ -39,7 +41,7 @@ export default async function TagsPage({ searchParams }: SearchParamsProps) {
             linkTitle="Ask a question"
           />
         )}
-        {result.map((tag) => (
+        {result.tags.map((tag) => (
           <Link
             href={`/tags/${tag._id}`}
             key={tag._id}
@@ -49,6 +51,12 @@ export default async function TagsPage({ searchParams }: SearchParamsProps) {
           </Link>
         ))}
       </section>
+      <div className="mt-10">
+        <Pagination 
+        pageNumber = {searchParams?.page ? +searchParams.page : 1}
+        isNext = {result.isNext}
+        />
+      </div>
     </>
   );
 }

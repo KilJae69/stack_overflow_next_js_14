@@ -61,7 +61,7 @@ const AnswerCard = ({
           alt='user avatar'
           value={author.name}
           title={` • asked ${getTimestamp(createdAt)}`}
-          href={`/profile/${author.clerkId}`}
+          // href={`/profile/${author.clerkId}`}
           textStyles='body-medium text-dark400_light700'
           isAuthor
         />
