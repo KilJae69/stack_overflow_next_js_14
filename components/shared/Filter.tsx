@@ -19,7 +19,6 @@ interface Props {
 }
 
 const Filter = ({ filters, otherClasses, containerClasses }: Props) => {
-
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -29,16 +28,16 @@ const Filter = ({ filters, otherClasses, containerClasses }: Props) => {
     const newUrl = formUrlQuery({
       params: searchParams.toString(),
       key: "filter",
-      value
-    })
+      value,
+    });
     router.push(newUrl, { scroll: false });
   };
 
   return (
     <div className={`relative ${containerClasses}`}>
       <Select
-      onValueChange={(value) => handleUpdateParams(value)}
-      defaultValue= {paramFilter || undefined}
+        onValueChange={(value) => handleUpdateParams(value)}
+        defaultValue={paramFilter || undefined}
       >
         <SelectTrigger
           className={`${otherClasses} body-regular light-border background-light800_dark300 text-dark500_light700 border px-5 py-2.5`}
@@ -47,10 +46,14 @@ const Filter = ({ filters, otherClasses, containerClasses }: Props) => {
             <SelectValue placeholder="Select a Filter" />
           </div>
         </SelectTrigger>
-        <SelectContent >
-          <SelectGroup >
+        <SelectContent className="text-dark500_light700 small-regular border-none bg-light-900 dark:bg-dark-300">
+          <SelectGroup>
             {filters.map((filter) => (
-              <SelectItem value={filter.value} key={filter.name} >
+              <SelectItem
+                value={filter.value}
+                key={filter.name}
+                className="cursor-pointer focus:bg-light-800 dark:focus:bg-dark-400"
+              >
                 {filter.name}
               </SelectItem>
             ))}

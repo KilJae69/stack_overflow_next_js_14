@@ -11,6 +11,7 @@ import { formatAndDivideNumber } from "@/lib/utils";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "../ui/use-toast";
 
 interface Props {
   type: string;
@@ -37,15 +38,26 @@ export default function Votes({
   const router = useRouter();
 
   const handleSave = async () => {
+    if (!userId) return toast({
+      title: "Please log in",
+      description: "You must be logged in to perform this action.",
+    });
 
-    if(!userId) return;
+    await toggleSaveQuestion({
+      userId: JSON.parse(userId),
+      questionId: JSON.parse(itemId),
+      path: pathname,
+    });
 
-    await toggleSaveQuestion({userId: JSON.parse(userId), questionId: JSON.parse(itemId), path: pathname})
-
+    return toast({title: `Question ${!hasSaved ? "saved in" : "removed from "} your collection`, variant: !hasSaved ? "default" : "destructive"});
   };
 
   const handleVote = async (action: string) => {
-    if (!userId) return;
+    if (!userId)
+      return toast({
+        title: "Please log in",
+        description: "You must be logged in to perform this action.",
+      });
 
     if (action === "upvote" && type === "question") {
       await upvoteQuestion({
@@ -55,10 +67,14 @@ export default function Votes({
         hasdownVoted,
         path: pathname,
       });
+
+      return toast({
+        title: `Upvote ${!hasupVoted ? "Successful" : "Removed"}`,
+        variant: !hasupVoted ? "default" : "destructive",
+      });
     }
 
     if (action === "upvote" && type === "answer") {
-      console.log("helloooooo");
       await upvoteAnswer({
         answerId: JSON.parse(itemId),
         userId: JSON.parse(userId),
@@ -66,9 +82,13 @@ export default function Votes({
         hasdownVoted,
         path: pathname,
       });
+      return toast({
+        title: `Upvote ${!hasupVoted ? "Successful" : "Removed"}`,
+        variant: !hasupVoted ? "default" : "destructive",
+      });
     }
 
-    if (action === "downvote" && type === "question")
+    if (action === "downvote" && type === "question") {
       await downvoteQuestion({
         questionId: JSON.parse(itemId),
         userId: JSON.parse(userId),
@@ -76,7 +96,13 @@ export default function Votes({
         hasdownVoted,
         path: pathname,
       });
-    if (action === "downvote" && type === "answer")
+      return toast({
+        title: `Downvote ${!hasdownVoted ? "Successful" : "Removed"}`,
+        variant: !hasdownVoted ? "default" : "destructive",
+      });
+    }
+
+    if (action === "downvote" && type === "answer") {
       await downvoteAnswer({
         answerId: JSON.parse(itemId),
         userId: JSON.parse(userId),
@@ -84,15 +110,19 @@ export default function Votes({
         hasdownVoted,
         path: pathname,
       });
-
-    // TODO: Show a toast message
+      return toast({
+        title: `Downvote ${!hasdownVoted ? "Successful" : "Removed"}`,
+        variant: !hasdownVoted ? "default" : "destructive",
+      });
+    }
   };
 
-  useEffect(()=>{
-    viewQuestion({questionId: JSON.parse(itemId), userId:userId ? JSON.parse(userId) : undefined})
-
-   
-  },[itemId,userId, pathname,router])
+  useEffect(() => {
+    viewQuestion({
+      questionId: JSON.parse(itemId),
+      userId: userId ? JSON.parse(userId) : undefined,
+    });
+  }, [itemId, userId, pathname, router]);
 
   return (
     <div className="flex gap-5">
