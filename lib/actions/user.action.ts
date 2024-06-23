@@ -17,6 +17,9 @@ import Question from "@/database/question.model";
 
 import Tag from "@/database/tag.model";
 import Answer from "@/database/answer.model";
+import { BadgeCriteriaType } from "@/types";
+
+import { assignBadges } from "../utils";
 
 export async function getUserById(params: any) {
   try {
@@ -132,11 +135,11 @@ export async function getAllUsers(params: GetAllUsersParams) {
       .skip(skipAmount)
       .limit(pageSize);
 
-      const totalUsers = await User.countDocuments(query);
+    const totalUsers = await User.countDocuments(query);
 
-      const isNext = totalUsers > skipAmount + users.length;
+    const isNext = totalUsers > skipAmount + users.length;
 
-    return {users, isNext};
+    return { users, isNext };
   } catch (error) {
     console.log(error);
     throw new Error("Error getting all users");
@@ -243,7 +246,58 @@ export async function getUserInfo(params: GetUserByIdParams) {
     const totalQuestions = await Question.countDocuments({ author: user._id });
     const totalAnswers = await Answer.countDocuments({ author: user._id });
 
-    return { user, totalQuestions, totalAnswers };
+    const  [questionUpvotes] = await Question.aggregate([
+      { $match: { author: user._id } },
+      {
+        $project: {
+          _id: 0,
+          upvotes: { $size: "$upvotes" },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalUpvotes: { $sum: "$upvotes" },
+        },
+      },
+    ]);
+    const  [answerUpvotes] = await Answer.aggregate([
+      { $match: { author: user._id } },
+      {
+        $project: {
+          _id: 0,
+          upvotes: { $size: "$upvotes" },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalUpvotes: { $sum: "$upvotes" },
+        },
+      },
+    ]);
+    const  [questionViews]  = await Question.aggregate([
+      { $match: { author: user._id } },
+
+      {
+        $group: {
+          _id: null,
+          totalViews: { $sum: "$views" },
+        },
+      },
+    ]);
+
+    const criteria = [
+      { type: "QUESTION_COUNT" as BadgeCriteriaType, count: totalQuestions },
+      { type: "ANSWER_COUNT" as BadgeCriteriaType, count: totalAnswers },
+      { type: "QUESTION_UPVOTES" as BadgeCriteriaType, count: questionUpvotes?.totalUpvotes || 0 },
+      { type: "ANSWER_UPVOTES" as BadgeCriteriaType, count: answerUpvotes?.totalUpvotes || 0 },
+      { type: "TOTAL_VIEWS" as BadgeCriteriaType, count: questionViews?.totalViews || 0 },
+    ];
+
+    const badgeCounts = assignBadges({ criteria })
+
+    return { user, totalQuestions, totalAnswers, badgeCounts,reputation: user.reputation};
   } catch (error) {
     console.log(error);
     throw new Error("Error getting the user info");
@@ -261,15 +315,15 @@ export async function getUserQuestions(params: GetUserStatsParams) {
     const totalQuestions = await Question.countDocuments({ author: userId });
 
     const userQuestions = await Question.find({ author: userId })
-      .sort({createdAt: -1, views: -1, upvotes: -1})
+      .sort({ createdAt: -1, views: -1, upvotes: -1 })
       .populate("tags", "_id name")
       .populate("author", "_id clerkId name picture")
       .skip(skipAmount)
-      .limit(pageSize)
+      .limit(pageSize);
 
-      const isNext = totalQuestions > skipAmount + userQuestions.length;
+    const isNext = totalQuestions > skipAmount + userQuestions.length;
 
-    return { totalQuestions, questions: userQuestions,isNext };
+    return { totalQuestions, questions: userQuestions, isNext };
   } catch (error) {
     console.log(error);
     throw new Error("Error getting user questions");
@@ -280,7 +334,7 @@ export async function getUserAnswers(params: GetUserStatsParams) {
   try {
     connectToDatabase();
 
-    const { userId, page = 1, pageSize = 5} = params;
+    const { userId, page = 1, pageSize = 5 } = params;
 
     const skipAmount = (page - 1) * pageSize;
 
@@ -291,11 +345,11 @@ export async function getUserAnswers(params: GetUserStatsParams) {
       .skip(skipAmount)
       .limit(pageSize)
       .populate("question", "_id title")
-      .populate("author", "_id clerkId name picture")
+      .populate("author", "_id clerkId name picture");
 
-      const isNext = totalAnswers > skipAmount + userAnswers.length;
+    const isNext = totalAnswers > skipAmount + userAnswers.length;
 
-    return { totalAnswers, answers: userAnswers,isNext };
+    return { totalAnswers, answers: userAnswers, isNext };
   } catch (error) {
     console.log(error);
     throw new Error("Error getting user answers");
