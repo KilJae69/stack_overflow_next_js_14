@@ -16,7 +16,7 @@ import { toast } from "../ui/use-toast";
 interface Props {
   type: string;
   itemId: string;
-  userId: string;
+  userId?: string | undefined;
   upvotes: number;
   hasupVoted: boolean;
   downvotes: number;
@@ -117,12 +117,12 @@ export default function Votes({
     }
   };
 
-  useEffect(() => {
-    viewQuestion({
-      questionId: JSON.parse(itemId),
-      userId: userId ? JSON.parse(userId) : undefined,
-    });
-  }, [itemId, userId, pathname, router]);
+   useEffect(() => {
+     viewQuestion({
+       questionId: JSON.parse(itemId),
+       userId: userId ? JSON.parse(userId) : undefined,
+     });
+   }, [itemId, userId, pathname, router]);
 
   return (
     <div className="flex gap-5">

@@ -17,7 +17,7 @@ const spaceGrotesk = Space_Grotesk({
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-spaceGrotesk",
 });
-console.log(inter, spaceGrotesk);
+
 export const metadata: Metadata = {
   title: "DevFlow",
   description:
